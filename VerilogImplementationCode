@@ -1,0 +1,32 @@
+// CryptoSpark Verilog implementation
+module CryptoSparkCPU(
+    input  logic clk,
+    input  logic rst,
+    output logic [18:0] pc,
+    output logic [18:0] instr,
+    output logic [18:0] reg_file [15:0]
+);
+
+// Instruction Fetch stage
+always @(posedge clk) begin
+    if (rst) pc <= 0;
+    else pc <= pc + 1;
+end
+
+// Instruction Decode stage
+always @(posedge clk) begin
+    instr <= mem_read(pc);
+end
+
+// Execute stage
+always @(posedge clk) begin
+    case (instr[18:15])
+        4'b0000: // ADD
+            reg_file[instr[14:11]] <= reg_file[instr[10:7]] + reg_file[instr[6:3]];
+        4'b0001: // AES_ENC
+            reg_file[instr[14:11]] <= aes_encrypt(reg_file[instr[10:7]]);
+        // ...
+    endcase
+end
+
+// ...
